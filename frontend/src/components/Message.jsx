@@ -1,34 +1,35 @@
 import { Card } from "./ui/card";
-import { User, CheckCheck, Phone, Video, MoreVertical } from "lucide-react";
+import { User, CheckCheck, Phone, Video, Image, Send } from "lucide-react";
 
 import {
   Avatar,
   AvatarBadge,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar";
-
-import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble";
+} from "./ui/avatar";
+import { Bubble, BubbleContent, BubbleGroup } from "./ui/bubble";
 
 import {
   Message,
   MessageAvatar,
   MessageContent,
-} from "@/components/ui/message";
-import { Search } from "lucide-react";
-import { Image } from "lucide-react";
-import { Send } from "lucide-react";
+} from "./ui/message";
+
+import Threedot from "./Threedot";
 
 export default function MessageComp() {
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center bg-slate-100 p-3 sm:p-6">
       <Card className="flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-[url('/bg.jpg')] bg-cover bg-center p-0  shadow-xl shadow-slate-200/60">
         {/* Contact Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <div className="">
               <Avatar className="h-12 w-12 border border-slate-200">
-                <AvatarImage src="/bg.jpg" alt="Aadil Khan" />
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="Aadil Khan"
+                />
                 <AvatarFallback className="bg-slate-100 text-slate-700">
                   <User className="h-5 w-5" />
                 </AvatarFallback>
@@ -36,7 +37,7 @@ export default function MessageComp() {
               </Avatar>
             </div>
 
-            <div className="min-w-0">
+            <div className="flex flex-col gap-1 min-w-0 ">
               <h2 className="truncate font-semibold text-slate-900">
                 Aadil Khan
               </h2>
@@ -57,17 +58,15 @@ export default function MessageComp() {
             >
               <Video className="h-5 w-5" />
             </button>
-            <button
-              aria-label="More options"
-              className="rounded-full p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-            >
-              <MoreVertical className="h-5 w-5" />
-            </button>
+
+            {/* three dots */}
+            <Threedot/>
+            
           </div>
         </div>
 
         {/* Messages */}
-        <div className="flex flex-1 flex-col gap-6 overflow-y-auto bg-transparent px-3 py-6 sm:px-6">
+        <div className="flex flex-1 flex-col gap-6 overflow-y-auto bg-transparent px-3 py-6 sm:px-6 scrollbar-none">
           <div className="flex justify-center">
             <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-400 shadow-sm ring-1 ring-slate-200/70">
               Today
@@ -78,7 +77,7 @@ export default function MessageComp() {
           <Message className="items-end gap-2">
             <MessageAvatar>
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/03.png" alt="Sender" />
+                <AvatarImage src="https://github.com/shadcn.png" alt="Sender" />
                 <AvatarFallback className="bg-slate-200 text-xs text-slate-700">
                   R
                 </AvatarFallback>
@@ -86,25 +85,25 @@ export default function MessageComp() {
             </MessageAvatar>
 
             <MessageContent className="max-w-[85%] sm:max-w-[75%]">
-              <p className="mb-1 ml-1 text-xs font-medium text-slate-500">
-                Rahul
-              </p>
               <Bubble
                 variant="muted"
                 className="rounded-2xl rounded-bl-sm bg-white shadow-sm ring-1 ring-slate-200/70"
               >
-                <BubbleContent className="text-sm leading-6 text-slate-700">
-                  Hey! The build failed during dependency installation.
+                <BubbleContent className="relative text-sm leading-6 text-slate-700">
+                  <p className="mb-1  text-xs font-semibold text-slate-500">
+                    Rahul
+                  </p>
+                  <p>Hey! The build failed during dependency installation.</p>
+                  <p className="absolute mr-2 bottom-0 right-0 text-[10px] text-slate-500">
+                    10:30 AM
+                  </p>
                 </BubbleContent>
               </Bubble>
-              <span className="mt-1 ml-1 text-[10px] text-slate-400">
-                10:30 AM
-              </span>
             </MessageContent>
           </Message>
 
           {/* Sent Message */}
-          <Message align="end" className="items-end gap-2">
+          <Message align="end" className="items-end gap-2 ">
             <MessageContent className="max-w-[85%] sm:max-w-[75%]">
               <Bubble className="rounded-2xl rounded-br-sm bg-slate-900 text-white shadow-md shadow-slate-900/10">
                 <BubbleContent className="text-sm leading-6 text-white">
@@ -122,7 +121,7 @@ export default function MessageComp() {
           <Message className="items-end gap-2">
             <MessageAvatar>
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/03.png" alt="Sender" />
+                <AvatarImage src="https://github.com/shadcn.png" alt="Sender" />
                 <AvatarFallback className="bg-slate-200 text-xs text-slate-700">
                   R
                 </AvatarFallback>
