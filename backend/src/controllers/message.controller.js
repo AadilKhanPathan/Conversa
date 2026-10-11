@@ -3,6 +3,8 @@ import cloudinary from "../utils/cloudinary.js";
 import messageModel from "../models/message.model.js";
 import userModel from "../models/user.model.js";
 
+
+
 // get all messages for a selected user
 export async function getMessages(req, res) {
   try {
@@ -11,8 +13,8 @@ export async function getMessages(req, res) {
 
     const messages = await messageModel.find({
       $or: [
-        { senderID: myId, receiverID: selectedUserId },
-        { senderID: selectedUserId, receiverId: myId },
+        { senderId: myId, receiverId: selectedUserId },
+        { senderId: selectedUserId, receiverId: myId },
       ],
     });
     await messageModel.updateMany(
@@ -61,8 +63,8 @@ export async function getAllContact(req, res) {
     const unseenMessages = {};
     const promises = filteredUsers.map(async (user) => {
       const messages = await messageModel.find({
-        senderID: user._id,
-        receiverID: userId,
+        senderId: user._id,
+        receiverId: userId,
         seen: false,
       });
       if (messages.length > 0) {

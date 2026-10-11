@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
+// import {cookie} from "cookie-parser"
 import jwt from "jsonwebtoken";
 
 export async function signUp(req, res) {
@@ -7,7 +8,7 @@ export async function signUp(req, res) {
     const { username, email, password } = req.body;
 
     // enter all fields
-    if (!username || !email || !password ) {
+    if (!username || !email || !password) {
       return res.status(400).json({ massage: "all fields are required" });
     }
 
@@ -66,10 +67,7 @@ export async function login(req, res) {
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
@@ -84,8 +82,16 @@ export async function login(req, res) {
     const token = jwt.sign(
       { id: user._id.toString() },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 60 * 60 * 1000,
+      path: "/",
+    });
 
     return res.status(200).json({
       message: "Login successful",
