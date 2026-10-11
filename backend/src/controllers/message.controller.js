@@ -11,8 +11,8 @@ export async function getMessages(req, res) {
 
     const messages = await messageModel.find({
       $or: [
-        { senderId: myId, receiverId: selectedUserId },
-        { senderId: selectedUserId, receiverId: myId },
+        { senderID: myId, receiverID: selectedUserId },
+        { senderID: selectedUserId, receiverId: myId },
       ],
     });
     await messageModel.updateMany(
@@ -29,7 +29,7 @@ export async function getMessages(req, res) {
     });
   } catch (error) {
     console.log(error.message);
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 }
 
@@ -44,12 +44,12 @@ export async function markMessagesAsSeen(req, res) {
     });
   } catch (error) {
     console.log(error.message);
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 }
 
 // get all user except the logged in user
-export async function getUserForSidebar(req, res) {
+export async function getAllContact(req, res) {
   try {
     const userId = req.user._id;
     // get the list of all the user except logged in user and don't include passwords
@@ -78,7 +78,7 @@ export async function getUserForSidebar(req, res) {
     });
   } catch (error) {
     console.log(error.message);
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 }
 
@@ -86,9 +86,10 @@ export async function getUserForSidebar(req, res) {
 export async function sendMessage(req, res) {
   try {
     const { text, image } = req.body;
-    const receiverId = req.params.id;
     const senderId = req.user._id;
-
+    const receiverId = req.params.id;
+    
+    
     let imageUrl;
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
