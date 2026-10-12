@@ -1,7 +1,6 @@
 import dns from "dns";
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 import "dotenv/config";
-import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import connectDB from "./src/db/connect.js";
@@ -14,10 +13,7 @@ const httpServer = createServer(app);
 // initialize socket.io server
 export const io = new Server(httpServer, {
   cors: {
-    // origin: "*",
-    origin: 
-      process.env.FRONTEND_URL
-    ,
+    origin: ["http://localhost:3000", process.env.FRONTEND_URL].filter(Boolean),
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
