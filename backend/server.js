@@ -1,10 +1,11 @@
+import dns from "dns";
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 import "dotenv/config";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import connectDB from "./src/db/connect.js";
 import app from "./app.js";
-import user from "./src/models/user.model.js";
 
 connectDB();
 
