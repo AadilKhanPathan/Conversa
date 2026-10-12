@@ -14,8 +14,13 @@ const httpServer = createServer(app);
 // initialize socket.io server
 export const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-    // origin: process.env.FRONTEND_URL
+    // origin: "*",
+    origin: [
+      process.env.FRONTEND_URL,
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 
