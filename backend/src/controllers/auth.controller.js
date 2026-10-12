@@ -1,6 +1,5 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
-// import {cookie} from "cookie-parser"
 import jwt from "jsonwebtoken";
 
 export async function signUp(req, res) {
@@ -33,6 +32,7 @@ export async function signUp(req, res) {
     });
 
     return res.status(201).json({
+      success: true,
       message: "user is successfully registered",
       user: {
         id: newUser._id,
@@ -43,7 +43,11 @@ export async function signUp(req, res) {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "registration failed", error: error.message });
+      .json({
+        success: false,
+        message: "registration failed",
+        error: error.message,
+      });
   }
 }
 
@@ -94,17 +98,18 @@ export async function login(req, res) {
     });
 
     return res.status(200).json({
+      success: true,
       message: "Login successful",
       user: {
         id: user._id,
         name: user.username,
       },
-      token,
     });
   } catch (error) {
     console.error("Login error:", error.message);
 
     return res.status(500).json({
+      success: false,
       message: "Internal server error",
     });
   }
