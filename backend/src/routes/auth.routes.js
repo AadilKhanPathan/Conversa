@@ -15,7 +15,7 @@ authRouter.post("/login", login);
 authRouter.get("/me", protectRoute, (req, res) => {
     return res.status(200).json({
         success: true,
-        user: user.req,
+        user: req.user,
     })
 })
 
