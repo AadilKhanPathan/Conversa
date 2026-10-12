@@ -34,12 +34,12 @@ io.on("connection", (socket) => {
 
   if (userId) userSocketMap[userId] = socket.id;
 
-  io.emit("getOnlinetUsers", Object.keys(userSocketMap));
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnected", () => {
     console.log("User Disconnected", userId);
     delete userSocketMap[userId];
-    io.emit("getOnlinetUsers", Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 
