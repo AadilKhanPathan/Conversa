@@ -1,68 +1,86 @@
-import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+
+"use client";
+
+import api from "@/lib/axios";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 
-const { backendUrl } = "http://localhost:2000";
-axios.defaults.baseURL = backendUrl;
+export const AuthContext = createContext(null);
 
-export const AuthContext = createContext();
+export const AuthProvider = ({ children }) => {
+  const router = useRouter();
 
-export const AuthProvider = ({Children}) => {
+  const [authUser, setAuthUser] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
-    const [token, setToken] = useState();
-    const [authUser, setAuthUser] = useState(null);
-    const [onlineUSers, setOnlineUsers] = useState([]);
-    const [socket, setSocket] = useState(null);
-    
-    // check if the user is authenticated and if so, set the user data and connect the socket
-    const checkAuth = async () => {
-        try {
-            const { data } = await axios.get("/api/auth/check");
-            if(data.success) {
-                setAuthUser(data.user)
-                connectSocket(data.user);
-            }
-        } catch (error) {
-            console.log(error)
+  useEffect(() => {
+    let active = true;
+    let newSocket;
+
+    async function checkAuth() {
+      try {
+        const { data } = await api.get("/auth/me");
+
+        if (!data.success || !data.user) {
+          router.replace("/login");
+          return;
         }
-    }
 
-    //  
+        if (!active) return;
 
-    // connect socket function to handle socket connection and online users updates
-    const connectSocket = (userdata) => {
-        if (!userdata || socket?.connected) return;
+        setAuthUser(data.user);
 
-        const newSocket = io(backendUrl, {
+        newSocket = io(
+          process.env.NEXT_PUBLIC_SOCKET_URL,
+          {
+            withCredentials: true,
             query: {
-                userId: userdata._id,
-            }
-        });
-        newSocket.connect();
+              userId: data.user._id,
+            },
+          }
+        );
+
         setSocket(newSocket);
 
         newSocket.on("getOnlineUsers", (userIds) => {
-            setOnlineUsers(userIds);
-        })
+          if (active) setOnlineUsers(userIds);
+        });
+      } catch (error) {
+        console.error("Authentication failed:", error);
 
-    }
-
-    useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common["token"] = token;
+        if (active) {
+          router.replace("/login");
         }
-        checkAuth;
-    })
-
-    const value ={
-        axios,
-        authUser,
-        onlineUSers,
-        socket,
+      }
     }
-    
 
-    return (<AuthContext.Provider value={value}>{Children}</AuthContext.Provider>);
-}
+    checkAuth();
+
+    return () => {
+      active = false;
+      newSocket?.disconnect();
+    };
+  }, [router]);
+
+  const value = {
+    authUser,
+    setAuthUser,
+    onlineUsers,
+    socket,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => useContext(AuthContext);

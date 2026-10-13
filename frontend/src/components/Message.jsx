@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "./ui/card";
 import { User, CheckCheck, Phone, Video, Image, Send } from "lucide-react";
 
@@ -16,13 +18,24 @@ import {
 } from "./ui/message";
 
 import Threedot from "./Threedot";
+import { useAuth } from "@/Context/AuthContext";
+import Users from "./Users";
+import { useState } from "react";
 
 export default function MessageComp() {
+
+const { authUser } =  useAuth();
+const [selectedUser, setSelectedUser] = useState(null);
+
   return (
-    <div className="flex h-full min-h-0 w-full items-center justify-center bg-slate-100 p-3 sm:p-6">
-      <Card className="flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-[url('/bg.jpg')] bg-cover bg-center p-0  shadow-xl shadow-slate-200/60">
+    <div className="flex h-full min-h-0 w-full justify-center bg-slate-100 p-3 sm:p-6 ">
+      <div className="border-2  sm:border-r-0 border-black bg-white rounded-none">
+       <Users /> 
+       </div>
+       
+      <Card className="hidden sm:flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-none border-2 border-l-0 border-r-0  border-black bg-[url('/bg.jpg')] bg-cover bg-center p-0  shadow-xl shadow-slate-200/60">
         {/* Contact Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2 sm:px-6">
+        <div className="flex items-center justify-between border-b border-none bg-white px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <div className="">
               <Avatar className="h-12 w-12 border border-slate-200">
@@ -39,7 +52,7 @@ export default function MessageComp() {
 
             <div className="flex flex-col gap-1 min-w-0 ">
               <h2 className="truncate font-semibold text-slate-900">
-                Aadil Khan
+                {authUser?.username}
               </h2>
               <p className="truncate text-xs text-emerald-600">Online</p>
             </div>
