@@ -14,7 +14,7 @@ import { User } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function Users() {
+export default function Users({ onSelectUser, selectedUserId }) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -66,6 +66,7 @@ export default function Users() {
       {users.map((user) => (
         <div
           key={user._id}
+          onClick={() => onSelectUser(user)}
           className="flex min-w-0 items-center gap-3 p-2 w-2xs"
         >
           <div className="">

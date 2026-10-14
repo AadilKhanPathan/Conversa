@@ -54,7 +54,7 @@ function SignUpPage() {
       {/* <Button onClick={() => signIn("google", { callbackUrl: "/" })}>
         continue with Google
       </Button> */}
-      <Card className=" w-full rounded max-w-md border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+      <Card className=" w-full rounded-none max-w-md border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
         <CardHeader className="space-y-1 text-center sm:text-left">
           <CardTitle className="text-2xl font-bold tracking-tight text-[#025469] dark:text-zinc-50">
             Hello ! Register to get started
@@ -85,7 +85,6 @@ function SignUpPage() {
               />
             </div>
 
-         
 
             <div className="flex flex-col gap-2">
               <Label
@@ -112,7 +111,7 @@ function SignUpPage() {
                 htmlFor="password"
                 className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
               >
-                Password
+                Set Password
               </Label>
               <div className="relative">
                 <Input

@@ -16,6 +16,8 @@ import { Button } from "@base-ui/react";
 import api from "@/lib/axios";
 import { Input } from "@base-ui/react";
 import Link from "next/link";
+import { Eye } from "lucide-react";
+import { EyeOff } from "lucide-react";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -79,31 +81,40 @@ function LoginPage() {
               />
             </div>
 
+            {/* ENTER PASSWORD */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="password"
-                  className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Set Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  required
+                  className="w-full rounded border border-zinc-300 bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:focus:ring-zinc-100"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
                 >
-                  Password
-                </Label>
+                  {showPassword ? <Eye /> : <EyeOff />}
+                </button>
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                required
-                className="w-full rounded border border-zinc-300 bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:focus:ring-zinc-100"
-              />
             </div>
           </CardContent>
 
           <CardFooter className="mt-2 flex flex-col space-y-4">
             <Button
               type="submit"
-              className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-zinc-800 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
+              className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-[#025469]/70 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
             >
               Log in
             </Button>

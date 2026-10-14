@@ -3,46 +3,90 @@
 import { Card } from "./ui/card";
 import { User, CheckCheck, Phone, Video, Image, Send } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarImage,
-} from "./ui/avatar";
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Bubble, BubbleContent, BubbleGroup } from "./ui/bubble";
 
-import {
-  Message,
-  MessageAvatar,
-  MessageContent,
-} from "./ui/message";
+import { Message, MessageAvatar, MessageContent } from "./ui/message";
 
 import Threedot from "./Threedot";
 import { useAuth } from "@/Context/AuthContext";
 import Users from "./Users";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
 
 export default function MessageComp() {
+  const { authUser } = useAuth();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([]);
 
-const { authUser } =  useAuth();
-const [selectedUser, setSelectedUser] = useState(null);
+  // send message
+  const [input, setInput] = useState({
+    text: "",
+    images: [],
+  });
+
+  const handleImages = (e) => {
+    const files = Array.from(e.target.files);
+
+    setInput((prev) => ({
+      ...prev,
+      images: files,
+    }));
+  };
+
+  const send = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const res = await api.post(`/message/send/${selectedUser?._id}`, {
+        text,
+        images,
+      });
+
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    async function getSelectedUser() {
+      try {
+        const { data } = await api.get(`/message/${selectedUser._id}`);
+
+        console.log(data);
+        setMessages(data.messages);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getSelectedUser();
+  }, [selectedUser]);
+
+  console.log("Selected user from contacts: " + selectedUser?.username);
+  console.log("chat between you and selected user: " + messages);
 
   return (
     <div className="flex h-full min-h-0 w-full justify-center bg-slate-100 p-3 sm:p-6 ">
       <div className="border-2  sm:border-r-0 border-black bg-white rounded-none">
-       <Users /> 
-       </div>
-       
-      <Card className="hidden sm:flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-none border-2 border-l-0 border-r-0  border-black bg-[url('/bg.jpg')] bg-cover bg-center p-0  shadow-xl shadow-slate-200/60">
+        <Users
+          onSelectUser={setSelectedUser}
+          selectedUserId={selectedUser?._id}
+        />
+      </div>
+
+      <Card className="hidden sm:flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-none border-x-0 border-y-2 border-black bg-[url('/bg.jpg')] bg-cover bg-center p-0 ">
         {/* Contact Header */}
         <div className="flex items-center justify-between border-b border-none bg-white px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <div className="">
               <Avatar className="h-12 w-12 border border-slate-200">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="Aadil Khan"
-                />
+                <AvatarImage src={`selected?.profilePic`} alt="Aadil Khan" />
                 <AvatarFallback className="bg-slate-100 text-slate-700">
                   <User className="h-5 w-5" />
                 </AvatarFallback>
@@ -52,7 +96,7 @@ const [selectedUser, setSelectedUser] = useState(null);
 
             <div className="flex flex-col gap-1 min-w-0 ">
               <h2 className="truncate font-semibold text-slate-900">
-                {authUser?.username}
+                {selectedUser ? selectedUser?.username : "You"}
               </h2>
               <p className="truncate text-xs text-emerald-600">Online</p>
             </div>
@@ -73,8 +117,7 @@ const [selectedUser, setSelectedUser] = useState(null);
             </button>
 
             {/* three dots */}
-            <Threedot/>
-            
+            <Threedot />
           </div>
         </div>
 
@@ -131,7 +174,7 @@ const [selectedUser, setSelectedUser] = useState(null);
           </Message>
 
           {/* Received Message Group */}
-          <Message className="items-end gap-2">
+          {/* <Message className="items-end gap-2">
             <MessageAvatar>
               <Avatar className="h-8 w-8">
                 <AvatarImage src="https://github.com/shadcn.png" alt="Sender" />
@@ -165,15 +208,20 @@ const [selectedUser, setSelectedUser] = useState(null);
                 10:32 AM
               </span>
             </MessageContent>
-          </Message>
+          </Message> */}
         </div>
 
-        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100 mx-3 mt-0">
+        <form
+          onSubmit={send}
+          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100 mx-3 mt-0"
+        >
           <input
             type="text"
             name="message"
+            value={input.text}
+            onChange={(e)=>setInput.text(e.target.value)}
             placeholder="Type a message..."
-            className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 outline-none"
+            className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           />
 
           <button
@@ -181,17 +229,17 @@ const [selectedUser, setSelectedUser] = useState(null);
             aria-label="Attach image"
             className="shrink-0 rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
           >
-            <Image className="h-5 w-5" />
+            <Image alt="" className="h-5 w-5" />
           </button>
 
           <button
-            type="button"
+            type="submit"
             aria-label="Send message"
             className="shrink-0 rounded-xl bg-slate-900 p-2.5 text-white transition hover:bg-slate-700 active:scale-95"
           >
             <Send className="h-5 w-5" />
           </button>
-        </div>
+        </form>
 
         {/* Bottom Hint */}
         <div className="border-t border-slate-100 bg-white px-4 py-3 text-center">
