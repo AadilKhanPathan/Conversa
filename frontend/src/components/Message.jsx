@@ -8,7 +8,7 @@ import { Bubble, BubbleContent, BubbleGroup } from "./ui/bubble";
 
 import { Message, MessageAvatar, MessageContent } from "./ui/message";
 
-import ThreeDot from "./ThreeDot";
+import ThreeDot from "./Threedot";
 import { useAuth } from "@/Context/AuthContext";
 import Users from "./Users";
 import { useEffect, useState } from "react";
