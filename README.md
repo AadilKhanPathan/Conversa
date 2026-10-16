@@ -1,12 +1,14 @@
 <div align="center">
 
-# 💬 Conversa
+# Conversa
 
 ### Real-time conversations, made simple.
 
 A full-stack chat application built with **Next.js, Node.js, Express, MongoDB, and Socket.IO**.
 
-[Live Demo](#live-demo) · [Features](#features) · [Getting Started](#getting-started)
+<a href="https://conversa-gge6.onrender.com">
+  <img src="https://img.shields.io/badge/LIVE_DEMO-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+</a>
 
 <!-- Add a screenshot here, for example:
 ![Conversa preview](./docs/conversa-preview.png)
