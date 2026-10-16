@@ -8,14 +8,15 @@ import { Bubble, BubbleContent, BubbleGroup } from "./ui/bubble";
 
 import { Message, MessageAvatar, MessageContent } from "./ui/message";
 
-import Threedot from "./Threedot";
+import ThreeDot from "./ThreeDot";
 import { useAuth } from "@/Context/AuthContext";
 import Users from "./Users";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
+import About from "./About";
 
 export default function MessageComp() {
-  const { authUser } = useAuth();
+  const { authUser, socket } = useAuth();
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -38,16 +39,25 @@ export default function MessageComp() {
   const send = async (e) => {
     e.preventDefault();
 
+    if (!selectedUser || !input.text.trim()) return;
+
     try {
       setLoading(true);
-      const res = await api.post(`/message/send/${selectedUser?._id}`, {
-        text,
-        images,
+
+      const { data } = await api.post(`/message/send/${selectedUser._id}`, {
+        text: input.text,
       });
 
-      console.log(res.data);
+      if (data.success) {
+        setMessages((prev) => [...prev, data.newMessage]);
+
+        setInput((prev) => ({
+          ...prev,
+          text: "",
+        }));
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -59,6 +69,7 @@ export default function MessageComp() {
         const { data } = await api.get(`/message/${selectedUser._id}`);
 
         console.log(data);
+        console.log(data.messages);
         setMessages(data.messages);
       } catch (error) {
         console.log(error);
@@ -68,12 +79,31 @@ export default function MessageComp() {
     getSelectedUser();
   }, [selectedUser]);
 
+  useEffect(() => {
+    if (!socket || !selectedUser) return;
+
+    const handleReceivedMessage = (newMessage) => {
+      // Only add messages sent by the selected contact
+      if (
+        String(newMessage.senderId) === String(selectedUser._id) &&
+        String(newMessage.receiverId) === String(authUser._id)
+      ) {
+        setMessages((prev) => [...prev, newMessage]);
+      }
+    };
+
+    socket.on("receivedMessage", handleReceivedMessage);
+
+    return () => {
+      socket.off("receivedMessage", handleReceivedMessage);
+    };
+  }, [socket, selectedUser, authUser]);
+
   console.log("Selected user from contacts: " + selectedUser?.username);
-  console.log("chat between you and selected user: " + messages);
 
   return (
     <div className="flex h-full min-h-0 w-full justify-center bg-slate-100 p-3 sm:p-6 ">
-      <div className="border-2  sm:border-r-0 border-black bg-white rounded-none">
+      <div className="border-2   w-sm lg:w-2xs sm:border-r-0 border-black bg-white rounded-none">
         <Users
           onSelectUser={setSelectedUser}
           selectedUserId={selectedUser?._id}
@@ -86,7 +116,10 @@ export default function MessageComp() {
           <div className="flex min-w-0 items-center gap-3">
             <div className="">
               <Avatar className="h-12 w-12 border border-slate-200">
-                <AvatarImage src={`selected?.profilePic`} alt="Aadil Khan" />
+                <AvatarImage
+                  src={`selectedUser?.profilePic`}
+                  alt="Aadil Khan"
+                />
                 <AvatarFallback className="bg-slate-100 text-slate-700">
                   <User className="h-5 w-5" />
                 </AvatarFallback>
@@ -101,6 +134,7 @@ export default function MessageComp() {
               <p className="truncate text-xs text-emerald-600">Online</p>
             </div>
           </div>
+
 
           <div className="flex items-center gap-1 sm:gap-2">
             <button
@@ -117,7 +151,7 @@ export default function MessageComp() {
             </button>
 
             {/* three dots */}
-            <Threedot />
+            <ThreeDot />
           </div>
         </div>
 
@@ -130,85 +164,33 @@ export default function MessageComp() {
           </div>
 
           {/* Received Message */}
-          <Message className="items-end gap-2">
-            <MessageAvatar>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" alt="Sender" />
-                <AvatarFallback className="bg-slate-200 text-xs text-slate-700">
-                  R
-                </AvatarFallback>
-              </Avatar>
-            </MessageAvatar>
+          {messages.map((message) => {
+            const isSentByMe =
+              String(message.senderId) === String(authUser._id);
 
-            <MessageContent className="max-w-[85%] sm:max-w-[75%]">
-              <Bubble
-                variant="muted"
-                className="rounded-2xl rounded-bl-sm bg-white shadow-sm ring-1 ring-slate-200/70"
+            return (
+              <Message
+                key={message._id}
+                align={isSentByMe ? "end" : "start"}
+                className="items-end gap-2"
               >
-                <BubbleContent className="relative text-sm leading-6 text-slate-700">
-                  <p className="mb-1  text-xs font-semibold text-slate-500">
-                    Rahul
-                  </p>
-                  <p>Hey! The build failed during dependency installation.</p>
-                  <p className="absolute mr-2 bottom-0 right-0 text-[10px] text-slate-500">
-                    10:30 AM
-                  </p>
-                </BubbleContent>
-              </Bubble>
-            </MessageContent>
-          </Message>
-
-          {/* Sent Message */}
-          <Message align="end" className="items-end gap-2 ">
-            <MessageContent className="max-w-[85%] sm:max-w-[75%]">
-              <Bubble className="rounded-2xl rounded-br-sm bg-slate-900 text-white shadow-md shadow-slate-900/10">
-                <BubbleContent className="text-sm leading-6 text-white">
-                  Can you share the exact error?
-                </BubbleContent>
-              </Bubble>
-              <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-slate-400">
-                10:31 AM
-                <CheckCheck className="h-3.5 w-3.5 text-sky-500" />
-              </div>
-            </MessageContent>
-          </Message>
-
-          {/* Received Message Group */}
-          {/* <Message className="items-end gap-2">
-            <MessageAvatar>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" alt="Sender" />
-                <AvatarFallback className="bg-slate-200 text-xs text-slate-700">
-                  R
-                </AvatarFallback>
-              </Avatar>
-            </MessageAvatar>
-
-            <MessageContent className="max-w-[85%] sm:max-w-[75%]">
-              <BubbleGroup>
-                <Bubble
-                  variant="muted"
-                  className="rounded-2xl rounded-bl-sm bg-white shadow-sm ring-1 ring-slate-200/70"
-                >
-                  <BubbleContent className="text-sm leading-6 text-slate-700">
-                    Here&apos;s the error from the logs.
-                  </BubbleContent>
-                </Bubble>
-                <Bubble
-                  variant="muted"
-                  className="rounded-2xl rounded-tl-md rounded-bl-sm bg-white shadow-sm ring-1 ring-slate-200/70"
-                >
-                  <BubbleContent className="text-sm leading-6 text-slate-700">
-                    Something went wrong with the build. The libraries are not
-                    installed correctly. Try running the build again.
-                  </BubbleContent>
-                </Bubble>
-              </BubbleGroup>
-              <span className="mt-1 ml-1 text-[10px] text-slate-400">
-                10:32 AM
-              </span>
-            </MessageContent>
-          </Message> */}
+                <MessageContent className="max-w-[85%] sm:max-w-[75%]">
+                  <Bubble
+                    variant={isSentByMe ? "default" : "muted"}
+                    className={
+                      isSentByMe
+                        ? "rounded-2xl rounded-br-sm bg-slate-900 text-white"
+                        : "rounded-2xl rounded-bl-sm bg-white"
+                    }
+                  >
+                    <BubbleContent className="text-sm leading-6">
+                      {message.text}
+                    </BubbleContent>
+                  </Bubble>
+                </MessageContent>
+              </Message>
+            );
+          })}
         </div>
 
         <form
@@ -219,7 +201,12 @@ export default function MessageComp() {
             type="text"
             name="message"
             value={input.text}
-            onChange={(e)=>setInput.text(e.target.value)}
+            onChange={(e) =>
+              setInput((prev) => ({
+                ...prev,
+                text: e.target.value,
+              }))
+            }
             placeholder="Type a message..."
             className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           />
@@ -248,6 +235,8 @@ export default function MessageComp() {
           </p>
         </div>
       </Card>
+
+      {/* <About/> */}
     </div>
   );
 }

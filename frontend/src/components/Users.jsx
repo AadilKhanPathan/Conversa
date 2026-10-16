@@ -13,6 +13,7 @@ import { MoreVertical } from "lucide-react";
 import { User } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import ThreeDot2 from "./ThreeDot2";
 
 export default function Users({ onSelectUser, selectedUserId }) {
   const [users, setUsers] = useState([]);
@@ -33,7 +34,7 @@ export default function Users({ onSelectUser, selectedUserId }) {
 
   console.log(users);
   return (
-    <div className=" flex flex-col items-center justify-center bg-white">
+    <div className=" flex flex-col  justify-center bg-white">
       {/* Header */}
       <div className="w-full border-r-0 border-slate-200 bg-white">
         <div className="flex items-center justify-between px-5 pt-5 pb-4">
@@ -41,12 +42,12 @@ export default function Users({ onSelectUser, selectedUserId }) {
             Conversa<span className="text-blue-400 text-3xl">.</span>
           </span>
 
-          <button
-            className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          <div
+            className="rounded-full p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             aria-label="More options"
           >
-            <MoreVertical size={20} />
-          </button>
+            <ThreeDot2 />
+          </div>
         </div>
 
         {/* Search */}
@@ -67,7 +68,7 @@ export default function Users({ onSelectUser, selectedUserId }) {
         <div
           key={user._id}
           onClick={() => onSelectUser(user)}
-          className="flex min-w-0 items-center gap-3 p-2 w-2xs"
+          className="flex min-w-0 items-center gap-3 p-2 w-2xs pl-5"
         >
           <div className="">
             <Avatar className="h-12 w-12 border border-slate-200">

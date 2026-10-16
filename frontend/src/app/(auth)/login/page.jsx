@@ -18,17 +18,21 @@ import { Input } from "@base-ui/react";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 function LoginPage() {
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
 
   const login = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       console.log(email, password);
 
       const res = await api.post("/auth/login", {
@@ -44,6 +48,8 @@ function LoginPage() {
       
     } catch (error) {
       console.log(error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -112,12 +118,23 @@ function LoginPage() {
           </CardContent>
 
           <CardFooter className="mt-2 flex flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-[#025469]/70 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
-            >
-              Log in
-            </Button>
+            {loading ? (
+  <Button
+    type="submit"
+    disabled
+    className="flex items-center justify-center w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow opacity-70 cursor-not-allowed"
+  >
+    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+    <span>Logging in...</span>
+  </Button>
+) : (
+  <Button
+    type="submit"
+    className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-[#025469]/70 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
+  >
+    Log in
+  </Button>
+)}
 
             <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
               Don&apos;t have an account?{" "}
