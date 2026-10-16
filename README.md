@@ -6,10 +6,6 @@
 
 A full-stack chat application built with **Next.js, Node.js, Express, MongoDB, and Socket.IO**.
 
-<a href="https://conversa-gge6.onrender.com">
-  <img src="https://img.shields.io/badge/LIVE_DEMO-000000?style=for-the-badge&logo=vercel&logoColor=white" />
-</a>
-
 <!-- Add a screenshot here, for example:
 ![Conversa preview](./docs/conversa-preview.png)
 -->
@@ -23,6 +19,11 @@ A full-stack chat application built with **Next.js, Node.js, Express, MongoDB, a
 **Conversa** is a real-time messaging web application designed to make one-to-one communication feel fast and intuitive. It combines a responsive Next.js interface with a Node.js/Express backend, MongoDB for persistent data, and Socket.IO for real-time communication.
 
 This project was built to practice full-stack development, API integration, authentication, database operations, and real-time event handling.
+
+<h2>Demo</h2>
+<a href="https://conversa-gge6.onrender.com">
+  <img src="https://img.shields.io/badge/LIVE_DEMO-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+</a>
 
 ## 🚀 Features
 
