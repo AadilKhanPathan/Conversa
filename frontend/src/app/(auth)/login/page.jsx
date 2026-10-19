@@ -27,7 +27,6 @@ function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
 
   const login = async (e) => {
     e.preventDefault();
@@ -42,13 +41,12 @@ function LoginPage() {
 
       console.log(res.data);
 
-      if(res.data.success){
+      if (res.data.success) {
         router.push("/");
       }
-      
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -58,7 +56,6 @@ function LoginPage() {
       <Card className="w-full max-w-md border border-black bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900 rounded-none">
         <CardHeader className="space-y-1 ml-1 sm:text-left">
           <CardTitle className="text-2xl font-bold tracking-tight text-[#025469] dark:text-zinc-50">
-
             Log in
           </CardTitle>
           <CardDescription className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -68,7 +65,6 @@ function LoginPage() {
 
         <form onSubmit={login}>
           <CardContent className="space-y-4">
-
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="email"
@@ -119,22 +115,22 @@ function LoginPage() {
 
           <CardFooter className="mt-2 flex flex-col space-y-4">
             {loading ? (
-  <Button
-    type="submit"
-    disabled
-    className="flex items-center justify-center w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow opacity-70 cursor-not-allowed"
-  >
-    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-    <span>Logging in...</span>
-  </Button>
-) : (
-  <Button
-    type="submit"
-    className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-[#025469]/70 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
-  >
-    Log in
-  </Button>
-)}
+              <Button
+                type="submit"
+                disabled
+                className="flex items-center justify-center w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow opacity-70 cursor-not-allowed"
+              >
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span>Logging in...</span>
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full rounded bg-[#025469] py-2.5 text-sm font-semibold text-white shadow hover:bg-[#025469]/70 active:scale-[0.99] transition-all dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
+              >
+                Log in
+              </Button>
+            )}
 
             <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
               Don&apos;t have an account?{" "}

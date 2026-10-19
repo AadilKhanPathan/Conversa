@@ -8,18 +8,19 @@ import { Bubble, BubbleContent, BubbleGroup } from "./ui/bubble";
 
 import { Message, MessageAvatar, MessageContent } from "./ui/message";
 
-import ThreeDot from "./ThreeDot";
+import ThreeDot from "./Threedot";
 import { useAuth } from "@/Context/AuthContext";
 import Users from "./Users";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "@/lib/axios";
-import About from "./About";
+import { CircleX } from "lucide-react";
 
 export default function MessageComp() {
   const { authUser, socket } = useAuth();
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
+  const fileInputRef = useRef(null);
 
   // send message
   const [input, setInput] = useState({
@@ -28,41 +29,72 @@ export default function MessageComp() {
   });
 
   const handleImages = (e) => {
-    const files = Array.from(e.target.files);
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      console.error("Please select an image");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      console.error("Image must be smaller than 5 MB");
+      e.target.value = "";
+      return;
+    }
 
     setInput((prev) => ({
       ...prev,
-      images: files,
+      images: [file],
     }));
+
+    e.target.value = "";
   };
 
   const send = async (e) => {
     e.preventDefault();
 
-    if (!selectedUser || !input.text.trim()) return;
+    if (!selectedUser || (!input.text.trim() && !input.images.length)) {
+      return;
+    }
 
     try {
       setLoading(true);
 
+      let image = "";
+
+      if (input.images[0]) {
+        image = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+
+          reader.readAsDataURL(input.images[0]);
+        });
+      }
+
       const { data } = await api.post(`/message/send/${selectedUser._id}`, {
-        text: input.text,
+        text: input.text.trim(),
+        image,
       });
 
       if (data.success) {
         setMessages((prev) => [...prev, data.newMessage]);
 
-        setInput((prev) => ({
-          ...prev,
+        setInput({
           text: "",
-        }));
+          images: [],
+        });
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to send message:", error);
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     async function getSelectedUser() {
       try {
@@ -81,7 +113,7 @@ export default function MessageComp() {
 
   useEffect(() => {
     if (!socket || !selectedUser) return;
-
+    console.log(socket);
     const handleReceivedMessage = (newMessage) => {
       // Only add messages sent by the selected contact
       if (
@@ -102,15 +134,18 @@ export default function MessageComp() {
   console.log("Selected user from contacts: " + selectedUser?.username);
 
   return (
-    <div className="flex h-full min-h-0 w-full justify-center bg-slate-100 p-3 sm:p-6 ">
-      <div className="border-2   w-sm lg:w-2xs sm:border-r-0 border-black bg-white rounded-none">
+    <div className=" min-h-full w-full flex items-center justify-center bg-slate-100 p-3 sm:p-6 ">
+      <div className="flex h-150 bg-white">
+      <div
+        className={`border-2 w-sm lg:w-2xs bg-white rounded-none`}
+      >
         <Users
           onSelectUser={setSelectedUser}
           selectedUserId={selectedUser?._id}
         />
       </div>
 
-      <Card className="hidden sm:flex h-full min-h-125 max-h-212 w-full max-w-xl flex-col overflow-hidden rounded-none border-x-0 border-y-2 border-black bg-[url('/bg.jpg')] bg-cover bg-center p-0 ">
+      <Card className="hidden sm:flex h-full w-full min-w-3xl max-w-3xl flex-col overflow-hidden rounded-2xl bg-[url('/bg.jpg')] bg-cover bg-center p-0 ">
         {/* Contact Header */}
         <div className="flex items-center justify-between border-b border-none bg-white px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
@@ -134,7 +169,6 @@ export default function MessageComp() {
               <p className="truncate text-xs text-emerald-600">Online</p>
             </div>
           </div>
-
 
           <div className="flex items-center gap-1 sm:gap-2">
             <button
@@ -184,7 +218,16 @@ export default function MessageComp() {
                     }
                   >
                     <BubbleContent className="text-sm leading-6">
-                      {message.text}
+                      {message.image && (
+                        <img
+                          src={message.image}
+                          alt="Shared image"
+                          className="mb-2 max-h-72 rounded-lg object-contain"
+                          loading="lazy"
+                        />
+                      )}
+
+                      {message.text && <p>{message.text}</p>}
                     </BubbleContent>
                   </Bubble>
                 </MessageContent>
@@ -195,7 +238,7 @@ export default function MessageComp() {
 
         <form
           onSubmit={send}
-          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100 mx-3 mt-0"
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100 mx-3 mt-0 mb-3"
         >
           <input
             type="text"
@@ -211,32 +254,58 @@ export default function MessageComp() {
             className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           />
 
+          {input.images?.map((file, index) => (
+            <div key={`${file.name}-${index}`} className="relative">
+              
+              <CircleX
+                className="absolute -right-2 -top-2 cursor-pointer rounded-full bg-white text-red-500"
+                size={20}
+                onClick={() => {
+                  setInput((prev) => ({
+                    ...prev,
+                    images: prev.images.filter((_, i) => i !== index),
+                  }));
+                }}
+              />
+
+              <img
+                src={URL.createObjectURL(file)}
+                alt="Image preview"
+                className="h-20 w-20 rounded-lg object-cover"
+              />
+            </div>
+          ))}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImages}
+          />
+
           <button
             type="button"
             aria-label="Attach image"
+            onClick={() => fileInputRef.current?.click()}
             className="shrink-0 rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <Image alt="" className="h-5 w-5" />
           </button>
-
           <button
             type="submit"
             aria-label="Send message"
-            className="shrink-0 rounded-xl bg-slate-900 p-2.5 text-white transition hover:bg-slate-700 active:scale-95"
+            className="shrink-0 rounded-full bg-slate-900 p-2.5 text-white transition hover:bg-slate-700 active:scale-95"
           >
             <Send className="h-5 w-5" />
           </button>
         </form>
 
-        {/* Bottom Hint */}
-        <div className="border-t border-slate-100 bg-white px-4 py-3 text-center">
-          <p className="text-xs text-slate-400">
-            Messages are end-to-end in your conversation
-          </p>
-        </div>
+        
       </Card>
-
+          
       {/* <About/> */}
+      </div>
     </div>
   );
 }
