@@ -25,6 +25,7 @@ This project was built to practice full-stack development, API integration, auth
   <img src="https://img.shields.io/badge/LIVE_DEMO-000000?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 
+<img width="1348" height="707" alt="image" src="https://github.com/user-attachments/assets/3c287b5e-f797-4c14-bf6e-cfacdfcb78dc" />
 <img width="1347" height="647" alt="image" src="https://github.com/user-attachments/assets/3d86d389-f6b3-45bb-9d52-9d3166cfa8ae" />
 
 
