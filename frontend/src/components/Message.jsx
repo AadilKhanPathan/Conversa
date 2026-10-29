@@ -135,17 +135,18 @@ export default function MessageComp() {
 
   return (
     <div className=" min-h-full w-full flex items-center justify-center bg-slate-100 p-3 sm:p-6 ">
-      <div className="flex h-150 bg-white">
+      <div className="flex h-150 ">
       <div
-        className={`border-2 w-sm lg:w-2xs bg-white rounded-none`}
+        className={`border-2 w-sm lg:w-2xs bg-white rounded-l-xl`}
       >
         <Users
+        
           onSelectUser={setSelectedUser}
           selectedUserId={selectedUser?._id}
         />
       </div>
 
-      <Card className="hidden sm:flex h-full w-full min-w-3xl max-w-3xl flex-col overflow-hidden rounded-2xl bg-[url('/bg.jpg')] bg-cover bg-center p-0 ">
+      <Card className="hidden sm:flex h-full w-full min-w-3xl max-w-3xl flex-col overflow-hidden rounded-r-xl bg-[url('/bg.jpg')] bg-cover bg-center p-0 ">
         {/* Contact Header */}
         <div className="flex items-center justify-between border-b border-none bg-white px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">

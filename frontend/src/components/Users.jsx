@@ -34,9 +34,9 @@ export default function Users({ onSelectUser, selectedUserId }) {
 
   console.log(users);
   return (
-    <div className=" flex flex-col  justify-center bg-white">
+    <div className="contact-page flex flex-col justify-center ">
       {/* Header */}
-      <div className="w-full border-r-0 border-slate-200 bg-white">
+      <div className="w-full border-r-0 border-slate-200">
         <div className="flex items-center justify-between px-5 pt-5 pb-4">
           <span className="text-2xl font-bold tracking-tight text-slate-900">
             Conversa<span className="text-blue-400 text-3xl">.</span>
@@ -68,11 +68,13 @@ export default function Users({ onSelectUser, selectedUserId }) {
         <div
           key={user._id}
           onClick={() => onSelectUser(user)}
-          className="flex min-w-0 items-center gap-3 p-2 w-2xs pl-5"
+          className="group flex min-w-0 w-2xs cursor-pointer items-center gap-3 rounded-xl p-2 pl-5
+      transition-all duration-200 hover:bg-blue-400/10
+      active:scale-[0.98]"
         >
-          <div className="">
-            <Avatar className="h-12 w-12 border border-slate-200">
-              <AvatarImage src={user.profilePic} alt="Aadil Khan" />
+          <div>
+            <Avatar className="h-12 w-12 border border-slate-200 transition-transform duration-200 group-hover:scale-105">
+              <AvatarImage src={user.profilePic} alt={user.username} />
               <AvatarFallback className="bg-slate-100 text-slate-700">
                 <User className="h-5 w-5" />
               </AvatarFallback>
@@ -80,11 +82,11 @@ export default function Users({ onSelectUser, selectedUserId }) {
             </Avatar>
           </div>
 
-          <div className="flex flex-col gap-1 min-w-0 ">
-            <h2 className="truncate font-semibold text-slate-900">
+          <div className="flex min-w-0 flex-col gap-1">
+            <h2 className="truncate font-semibold text-slate-900 transition-colors duration-200 group-hover:text-blue-700">
               {user.username}
             </h2>
-            <p className="truncate text-xs text-emerald-600">new message</p>
+            <p className="truncate text-xs text-emerald-600">New message</p>
           </div>
         </div>
       ))}
