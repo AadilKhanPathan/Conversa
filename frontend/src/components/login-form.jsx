@@ -16,9 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye } from "lucide-react";
-import { EyeOff } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Eye,EyeOff, Loader2} from "lucide-react";
 import api from "@/lib/axios";
 
 export function LoginForm({ className, ...props }) {
